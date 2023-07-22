@@ -18,5 +18,12 @@ The delay that a specific frequency component of the signal experiences.
 - Group Delay
 The derivative of the phase response with respect to frequency. It measures the rate of change of the phase delay and is often considered as a time delay.
 
+How to intiatlize the hub:
+```
+Me.Hub = New Hub(Me.Vp.ClientRectangle, <samplerate(128+), New Latency("<hostname>"))
+
+Me.Hub.Devices.Add(New Transformer(Me.Hub, New Fourier(<Window Function>))
+Me.Hub.Devices.Add(New Transformer(Me.Hub, New Spectrogram(<Window Function>)))
+```
 
 ![image](https://github.com/TheBarret/PingTracker/assets/25234371/47beb1a5-06be-4233-b9ac-0397eb078ff2)
