@@ -10,15 +10,22 @@ __screenshots are from a newer versions im currently testing and are usually dif
 - Identify Patterns
 
 In the frequency domain, it's easier to identify patterns that may not be apparent in the time domain. For example, if there's a regular spike in latency at certain intervals, this will show up as a peak at a corresponding frequency.
-Noise Reduction: The frequency domain can help in identifying and reducing noise. If the latency data contains random fluctuations, these can be identified as high-frequency noise and filtered out, leaving the more meaningful, low-frequency trends.
+
+- Noise Reduction
+
+The frequency domain can help in identifying and reducing noise. If the latency data contains random fluctuations, these can be identified as high-frequency noise and filtered out, leaving the more meaningful, low-frequency trends.
 
 - Bandwidth Utilization
 
 By looking at the frequency domain, you can get a better understanding of the bandwidth utilization. If there are a lot of high-frequency components, it means that the data is changing rapidly, which could indicate a high utilization of bandwidth.
 
-- System Performance Analysis: Frequency analysis can help in identifying system performance issues. For instance, if there's a peak at a certain frequency, it could indicate a periodic task that's causing a delay.
+- System Performance Analysis
 
-Predictive Analysis: Frequency domain data can be used for predictive analysis. For example, if the frequency data shows a regular pattern, it can be used to predict future behavior.
+Frequency analysis can help in identifying system performance issues. For instance, if there's a peak at a certain frequency, it could indicate a periodic task that's causing a delay.
+
+- Predictive Analysis
+
+Frequency domain data can be used for predictive analysis. For example, if the frequency data shows a regular pattern, it can be used to predict future behavior.
 
 - FFT-Derived Delay (Phase Delay and Group Delay)
 
