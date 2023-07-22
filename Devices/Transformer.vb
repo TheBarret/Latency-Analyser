@@ -245,26 +245,6 @@ Namespace Devices
             End Get
         End Property
 
-        ''' <summary>
-        ''' Default heatmap colors (Matlab Jet)
-        ''' </summary>
-        ''' <returns></returns>
-        Public Shared ReadOnly Property Jetcolor() As Color()
-            Get
-                Static colors As Color() = New Color() {
-                        Color.FromArgb(143, 0, 0),     ' Dark Red
-                        Color.FromArgb(255, 0, 0),     ' Red
-                        Color.FromArgb(255, 127, 0),   ' Orange
-                        Color.FromArgb(255, 255, 0),   ' Yellow
-                        Color.FromArgb(0, 255, 0),     ' Green
-                        Color.FromArgb(0, 255, 255),   ' Cyan (Light Blue)
-                        Color.FromArgb(0, 0, 255),     ' Blue
-                        Color.FromArgb(0, 0, 0)      ' Black
-                }
-                Return colors
-            End Get
-        End Property
-
         Public Overrides Function ToString() As String
             Return "Transformer"
         End Function
