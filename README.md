@@ -30,6 +30,28 @@ The delay that a specific frequency component of the signal experiences.
 
 The derivative of the phase response with respect to frequency. It measures the rate of change of the phase delay and is often considered as a time delay.
 
+
+Window Functions (Filters):
+- None filter
+
+The simplest type of window where all the data points are given equal weight, it provides the best resolution but worst spectral leakage
+
+- Hanning
+
+Good balance between frequency resolution and spectral leakage. It's useful in many general-purpose signal processing applications
+
+- Blackman
+
+The Blackman window further reduces spectral leakage compared to the Hamming window, but at the expense of frequency resolution,
+it's useful when you need to suppress side lobes even further
+
+- Bartlett 
+
+The Bartlett window function basically forms a triangular shape which is non-zero from the left endpoint to the right endpoint of the window.
+It's simple to compute and implement. The Bartlett window offers a reasonable compromise between the amount of spectral leakage and the resolution of the frequency estimation.
+It has reduced "scalloping loss
+
+
 How to intiatlize the hub:
 
 ```
