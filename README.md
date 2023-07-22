@@ -1,5 +1,5 @@
 # PingTracker
-Tracks and plots latency data in a the FFT model (Work in progress)
+Tracks and plots latency data and processes it through a FFT model (Work in progress)
 
 Features:
 - Identifying periodic issues: If there are any periodic issues affecting latency, they will show up as peaks at corresponding frequencies in the FFT. For example, if there's a process that runs every 10 seconds and slows down the network, you would see a peak at the 0.1 Hz frequency.
