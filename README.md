@@ -61,4 +61,4 @@ Me.Hub.Devices.Add(New Transformer(Me.Hub, New Fourier(<Window Function>))
 Me.Hub.Devices.Add(New Transformer(Me.Hub, New Spectrogram(<Window Function>)))
 ```
 ![image](https://github.com/TheBarret/PingTracker/assets/25234371/559cf174-fe23-4f9c-8d7e-64f2b16581ed)
-
+(screenshots are from a newer version im testing and are usually different in look but will be uploaded soon)
