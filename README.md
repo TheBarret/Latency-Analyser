@@ -60,5 +60,5 @@ Me.Hub = New Hub(Me.Vp.ClientRectangle, <samplerate(128+), New Latency("<hostnam
 Me.Hub.Devices.Add(New Transformer(Me.Hub, New Fourier(<Window Function>))
 Me.Hub.Devices.Add(New Transformer(Me.Hub, New Spectrogram(<Window Function>)))
 ```
+![image](https://github.com/TheBarret/PingTracker/assets/25234371/559cf174-fe23-4f9c-8d7e-64f2b16581ed)
 
-![image](https://github.com/TheBarret/PingTracker/assets/25234371/47beb1a5-06be-4233-b9ac-0397eb078ff2)
