@@ -1,7 +1,7 @@
 # PingTracker
 Tracks and plots latency data and processes it through a FFT model (Work in progress)
 
-Features:
+# Features:
 - Identifying periodic issues
 
 If there are any periodic issues affecting latency, they will show up as peaks at corresponding frequencies in the FFT.
@@ -31,8 +31,9 @@ The delay that a specific frequency component of the signal experiences.
 The derivative of the phase response with respect to frequency. It measures the rate of change of the phase delay and is often considered as a time delay.
 
 
-Window Functions (Filters):
-- None filter
+# Window Functions (Filters)
+
+- None
 
 The simplest type of window where all the data points are given equal weight, it provides the best resolution but worst spectral leakage
 
