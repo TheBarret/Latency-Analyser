@@ -13,10 +13,3 @@
     ' The Gaussian window has good frequency resolution and moderate spectral leakage.
     ' It's often used in applications like filter design and spectral analysis where a compromise between resolution and leakage is necessary
 End Enum
-
-Public Enum PType
-    Cpu
-    Memory
-    Disk
-    Network
-End Enum
