@@ -1,4 +1,4 @@
-![image](https://github.com/TheBarret/PingTracker/assets/25234371/03f10a1a-a2a4-4efc-a2a2-910ad19a43ec)# PingTracker
+# PingTracker
 Tracks and plots latency data in a the FFT model (Work in progress)
 
 Features:
