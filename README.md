@@ -1,6 +1,9 @@
 # PingTracker
 Tracks and plots latency data and processes it through a FFT model (Work in progress)
 
+![image](https://github.com/TheBarret/PingTracker/assets/25234371/559cf174-fe23-4f9c-8d7e-64f2b16581ed)
+(screenshots are from a newer version im testing and are usually different in look but will be uploaded soon)
+
 # Advantages
 
 - Identify Patterns
@@ -51,5 +54,3 @@ The Bartlett window function basically forms a triangular shape which is non-zer
 It's simple to compute and implement. The Bartlett window offers a reasonable compromise between the amount of spectral leakage and the resolution of the frequency estimation.
 It has reduced "scalloping loss
 
-![image](https://github.com/TheBarret/PingTracker/assets/25234371/559cf174-fe23-4f9c-8d7e-64f2b16581ed)
-(screenshots are from a newer version im testing and are usually different in look but will be uploaded soon)
