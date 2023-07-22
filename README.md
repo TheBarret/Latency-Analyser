@@ -51,14 +51,5 @@ The Bartlett window function basically forms a triangular shape which is non-zer
 It's simple to compute and implement. The Bartlett window offers a reasonable compromise between the amount of spectral leakage and the resolution of the frequency estimation.
 It has reduced "scalloping loss
 
-
-How to intiatlize the hub:
-
-```
-Me.Hub = New Hub(Me.Vp.ClientRectangle, <samplerate(128+), New Latency("<hostname>"))
-
-Me.Hub.Devices.Add(New Transformer(Me.Hub, New Fourier(<Window Function>))
-Me.Hub.Devices.Add(New Transformer(Me.Hub, New Spectrogram(<Window Function>)))
-```
 ![image](https://github.com/TheBarret/PingTracker/assets/25234371/559cf174-fe23-4f9c-8d7e-64f2b16581ed)
 (screenshots are from a newer version im testing and are usually different in look but will be uploaded soon)
