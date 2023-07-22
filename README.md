@@ -1,4 +1,4 @@
-# PingTracker
+![image](https://github.com/TheBarret/PingTracker/assets/25234371/03f10a1a-a2a4-4efc-a2a2-910ad19a43ec)# PingTracker
 Tracks and plots latency data in a the FFT model (Work in progress)
 
 Features:
@@ -19,4 +19,4 @@ The delay that a specific frequency component of the signal experiences.
 The derivative of the phase response with respect to frequency. It measures the rate of change of the phase delay and is often considered as a time delay.
 
 
-![image](https://github.com/TheBarret/PingTracker/assets/25234371/1e0a1f4a-4a5c-4f72-a98e-c5d4a9f576c9)
+![image](https://github.com/TheBarret/PingTracker/assets/25234371/47beb1a5-06be-4233-b9ac-0397eb078ff2)
