@@ -16,22 +16,6 @@ By looking at the frequency domain, you can get a better understanding of the ba
 
 Predictive Analysis: Frequency domain data can be used for predictive analysis. For example, if the frequency data shows a regular pattern, it can be used to predict future behavior.
 
-# Features:
-- Identifying periodic issues
-
-If there are any periodic issues affecting latency, they will show up as peaks at corresponding frequencies in the FFT.
-For example, if there's a process that runs every 10 seconds and slows down the network, you would see a peak at the 0.1 Hz frequency.
-
-- Identifying persistent problems
-
-If the latency is consistently high, this will appear as a peak at the 0Hz frequency (often called the DC component in FFT results).
-If you see a high DC component, it could be an indication of a persistent problem with latency.
-
-- Identifying random issues
-
-If there are a lot of random, non-periodic issues affecting latency, these will show up as a wide, flat spectrum in the FFT.
-If you see a spectrum that doesn't have distinct peaks but is high across a wide range of frequencies, it could mean that there's a lot of random jitter in the latency.
-
 - FFT-Derived Delay (Phase Delay and Group Delay)
 
 These are derived from the Fourier Transform of a signal, revealing how the phase of the frequency components changes from one sample to another.
