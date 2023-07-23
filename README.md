@@ -1,4 +1,4 @@
-# PingTracker
+# Latency Analyser
 Tracks and plots latency data and processes it through a FFT model (Work in progress)
 
 ![image](https://github.com/TheBarret/PingTracker/assets/25234371/0ac565bb-0e3c-4c2c-9913-ce44395c42d1)
