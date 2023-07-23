@@ -43,22 +43,22 @@ Public Class Hub
     Public Sub Update()
         If (Me.Devices.Any) Then
             Dim offset As TimeSpan = DateTime.Now - Me.Timing
-            SyncLock Me.Lock
-                If (offset.Duration.Seconds >= 1) Then
-                    Me.Value = Me.Provider.GetValue(Me)
-                    If (Me.Value > 0) Then
+            If (offset.Duration.Seconds >= 1) Then
+                Me.Value = Me.Provider.GetValue(Me)
+                If (Me.Value > 0) Then
+                    SyncLock Me.Lock
                         Me.Data.Add(Me.Normalize(Me.Value))
                         Me.Timing = DateTime.Now
                         Me.Counter += 1
                         If (Me.Data.Count > Me.Samplerate) Then
                             Me.Data.RemoveAt(0)
                         End If
-                    End If
+                    End SyncLock
                 End If
-                For i As Integer = 0 To Me.Devices.Count - 1
-                    Me.Devices(i).Update(Me.Data)
-                Next
-            End SyncLock
+            End If
+            For i As Integer = 0 To Me.Devices.Count - 1
+                Me.Devices(i).Update(Me.Data)
+            Next
         End If
     End Sub
 
@@ -67,27 +67,27 @@ Public Class Hub
     ''' </summary>
     Public Function Render() As Image
         Me.Busy = True
-        Using src As New Bitmap(Me.Bounds.Width, Me.Bounds.Height)
-            Using g As Graphics = Graphics.FromImage(src)
-                g.SmoothingMode = SmoothingMode.AntiAlias
-                g.Clear(Color.White)
-                Dim width As Integer = (src.Width - 2 * Me.Padding) - 1
-                Dim height As Integer = ((src.Height - ((Me.Devices.Count + 1) * Me.Padding)) \ Me.Devices.Count) - 1
-                For i As Integer = 0 To Me.Devices.Count - 1
-                    Using frame As New Bitmap(width, height)
-                        Using g2 As Graphics = Graphics.FromImage(frame)
-                            g2.Clear(Color.Black)
-                            g2.SmoothingMode = SmoothingMode.AntiAlias
-                            Dim srcrect As New Rectangle(0, 0, frame.Width - Me.Padding, frame.Height - Me.Padding)
-                            Me.Devices(i).Render(frame, g2, srcrect)
+        SyncLock Me.Lock
+            Using src As New Bitmap(Me.Bounds.Width, Me.Bounds.Height)
+                Using g As Graphics = Graphics.FromImage(src)
+                    Dim width As Integer = (src.Width - 2 * Me.Padding) - 1
+                    Dim height As Integer = ((src.Height - ((Me.Devices.Count + 1) * Me.Padding)) \ Me.Devices.Count) - 1
+                    For i As Integer = 0 To Me.Devices.Count - 1
+                        Using frame As New Bitmap(width, height)
+                            Using g2 As Graphics = Graphics.FromImage(frame)
+                                g2.Clear(Color.Black)
+                                g2.SmoothingMode = SmoothingMode.AntiAlias
+                                Dim srcrect As New Rectangle(0, 0, frame.Width - Me.Padding, frame.Height - Me.Padding)
+                                Me.Devices(i).Render(frame, g2, srcrect)
+                            End Using
+                            g.DrawImage(CType(frame.Clone, Image), New Rectangle(Me.Padding, Me.Padding + (i * (height + Me.Padding)), width, height))
                         End Using
-                        g.DrawImage(CType(frame.Clone, Image), New Rectangle(Me.Padding, Me.Padding + (i * (height + Me.Padding)), width, height))
-                    End Using
-                Next
+                    Next
+                End Using
+                Me.Busy = False
+                Return CType(src.Clone, Image)
             End Using
-            Me.Busy = False
-            Return CType(src.Clone, Image)
-        End Using
+        End SyncLock
     End Function
 
     ''' <summary>

@@ -6,12 +6,13 @@ Public Class Effects
     ''' Draws caption label
     ''' </summary>
     Public Shared Sub DrawLabel(g As Graphics, x As Single, y As Single, font As Font, tint As Color, text As String, Optional gloss As Boolean = True)
+        Static theme As New Theme
         Dim offset As Single = g.MeasureString(text, font).Width
         Dim srcrect As New RectangleF(x + 5, y, offset, 11)
         g.FillRectangle(Brushes.White, srcrect)
         g.DrawString(text, font, New SolidBrush(tint), srcrect.X, srcrect.Y)
         g.DrawRectangle(Pens.Black, srcrect.X, srcrect.Y, srcrect.Width, srcrect.Height)
-        If (gloss) Then Effects.Gloss(g, srcrect, New Theme, 100, 50, LinearGradientMode.ForwardDiagonal)
+        If (gloss) Then Effects.Gloss(g, srcrect, theme, 100, 50, LinearGradientMode.ForwardDiagonal)
     End Sub
 
     Public Shared Sub DrawHexagon(g As Graphics, cx As Single, cy As Single, radius As Single, brush As SolidBrush)

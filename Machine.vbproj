@@ -87,6 +87,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstracts\IProvider.vb" />
+    <Compile Include="Output\Average.vb" />
+    <Compile Include="Output\Waterfall.vb" />
     <Compile Include="Utilities\Complex.vb" />
     <Compile Include="Devices\Transformer.vb" />
     <Compile Include="Output\Spectrogram.vb" />

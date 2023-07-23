@@ -5,16 +5,14 @@ Imports Machine.Utilities
 Namespace Providers
     Public Class Latency
         Inherits IProvider
+
         Public Property Hostname As String
-        Private m_value As Double
-        Private m_status As IPStatus
-        Private m_hops As List(Of TRecord)
+        Private m_value As Double = 0R
+        Private m_status As IPStatus = IPStatus.Unknown
+        Private m_hops As List(Of TRecord) = New List(Of TRecord)
 
         Sub New(hostname As String)
             Me.Hostname = hostname
-            Me.m_value = 0R
-            Me.m_status = IPStatus.Unknown
-            Me.m_hops = New List(Of TRecord)
         End Sub
 
         Public Overrides Sub Reset()
@@ -30,7 +28,7 @@ Namespace Providers
 
         Public Overrides ReadOnly Property Name As String
             Get
-                Return String.Format("Latency({0} {1}ms {2}hops {3})", Me.Hostname, Me.m_value, Me.m_hops.Count, Me.m_status)
+                Return String.Format("Latency({0} {1}ms {2} hops {3})", Me.Hostname, Me.m_value, Me.m_hops.Count, Me.m_status)
             End Get
         End Property
 

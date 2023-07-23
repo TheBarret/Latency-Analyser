@@ -4,6 +4,7 @@
         Public Property Hub As Hub
         Public Property Font As Font
         Public Property Output As IOutput
+        Public Property Real As Complex()
 
         Sub New(hub As Hub, output As IOutput)
             Me.Hub = hub

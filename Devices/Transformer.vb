@@ -5,38 +5,56 @@ Namespace Devices
     Public Class Transformer
         Inherits IDevice
         Public Const Delay As Integer = 1
+        Public Shared Property Beta As Double = 0.5R
+        Public Shared Property Sigma As Double = 0.4R
 
         Sub New(hub As Hub, output As IOutput)
             MyBase.New(hub, output)
         End Sub
 
+        ''' <summary>
+        ''' Updates the transformer with new data and loads it into the output driver.
+        ''' </summary>
+        ''' <param name="data">The new data to be processed.</param>
         Public Overrides Sub Update(data As List(Of Double))
+            Me.Real = Transformer.Transform(Transformer.Wrap(data, Me.Output.WFunction))
             Me.Output.Load(data)
         End Sub
 
+        ''' <summary>
+        ''' Renders the visual representation of the data and additional information.
+        ''' </summary>
+        ''' <param name="bm">The bitmap to render on.</param>
+        ''' <param name="g">The graphics object to use for rendering.</param>
+        ''' <param name="bounds">The bounds of the rendering area.</param>
         Public Overrides Sub Render(bm As Bitmap, g As Graphics, bounds As Rectangle)
             Dim sw As New Stopwatch
             sw.Start()
             Me.Output.Render(Me, g, bounds)
             g.DrawRectangle(Pens.Black, bounds)
             sw.Stop()
-            Dim label As String = String.Format("{0} » {1}({2}ms)", Me.Hub.Provider.Name, Me.Output.GetType.Name, sw.ElapsedMilliseconds)
+            Dim label As String = String.Format("{0} » WFunc({1}) » {2}({3}ms)", Me.Hub.Provider.Name, Me.Output.WFunction, Me.Output.Name, sw.ElapsedMilliseconds)
             Dim width As Single = g.MeasureString(label, Me.Font).Width + 5
             Effects.DrawLabel(g, bounds.Width - width, 0, Me.Font, Color.Black, label)
         End Sub
 
-
-
         ''' <summary>
-        ''' Convert bin number to frequency in Hertz
+        ''' Converts a bin number to its corresponding frequency in Hertz.
         ''' </summary>
+        ''' <param name="bin">The bin number.</param>
+        ''' <param name="samplerate">The sample rate of the data.</param>
+        ''' <param name="bins">The total number of bins.</param>
+        ''' <returns>The frequency in Hertz.</returns>
         Public Shared Function GetFrequency(bin As Integer, samplerate As Integer, bins As Integer) As Double
             Return bin * (samplerate / 2) / bins
         End Function
 
         ''' <summary>
-        ''' Returns the corresponding heat color from a min/max range
+        ''' Converts a value to a color on a heatmap.
         ''' </summary>
+        ''' <param name="value">The value to convert, expected to be between 0 and 1.</param>
+        ''' <param name="map">The color map to use for the conversion.</param>
+        ''' <returns>The color corresponding to the value on the heatmap.</returns>
         Public Shared Function GetHeatmap(value As Double, ParamArray map() As Color) As Color
             ' Normalize value to be between 0 and 1
             value = Math.Min(1.0, Math.Max(0.0, value))
@@ -61,8 +79,11 @@ Namespace Devices
         End Function
 
         ''' <summary>
-        ''' Detects peaks automatically, limited by amount
+        ''' Detects peaks in the data using a simple local maximum method.
         ''' </summary>
+        ''' <param name="data">The data to detect peaks in.</param>
+        ''' <param name="count">The maximum number of peaks to detect.</param>
+        ''' <returns>A list of detected peaks.</returns>
         Public Shared Function DetectPeaks(data As Complex(), Optional count As Integer = -1) As List(Of Highlight)
             Dim peaks As New List(Of Highlight)
             Dim dataReals As IEnumerable(Of Double) = data.Select(Function(c) c.Magnitude).ToArray()
@@ -103,8 +124,11 @@ Namespace Devices
         End Function
 
         ''' <summary>
-        ''' Calculates the moving average of the array
+        ''' Calculates the moving average of the data.
         ''' </summary>
+        ''' <param name="data">The data to calculate the moving average of.</param>
+        ''' <param name="length">The length of the moving average window.</param>
+        ''' <returns>The moving average of the data.</returns>
         Public Shared Function MovingAverage(data As IEnumerable(Of Double), Optional length As Integer = 1) As Double()
             Dim result As New List(Of Double)
             Dim queue As New Queue(Of Double)(length)
@@ -119,24 +143,38 @@ Namespace Devices
         End Function
 
         ''' <summary>
-        ''' Double to Complex Convertor
+        ''' Wraps the data into a complex number array and applies a window function.
         ''' </summary>
+        ''' <param name="data">The data to wrap.</param>
+        ''' <param name="filter">The window function to apply.</param>
+        ''' <returns>The wrapped data.</returns>
         Public Shared Function Wrap(data As List(Of Double), Optional filter As WFunction = WFunction.None) As Complex()
             Dim buffer As Complex() = New Complex(data.Count - 1) {}
             For i As Integer = 0 To data.Count - 1
                 buffer(i) = New Complex(data(i), 0)
             Next
             Select Case filter
+                Case WFunction.BSpline : Transformer.BSpline(buffer, 2)
+                Case WFunction.Parzen : Transformer.Parzen(buffer, 1)
+                Case WFunction.Polynomial : Transformer.Polynomial(buffer)
+                Case WFunction.FlatTop : Transformer.FlatTop(buffer)
+                Case WFunction.NuttallBm : Transformer.BlackmanNuttall(buffer)
+                Case WFunction.PlanckTaper : Transformer.PlanckTaper(buffer, 0.01)
+                Case WFunction.Tukey : Transformer.Tukey(buffer, 0.1)
                 Case WFunction.Hanning : Transformer.Hann(buffer)
                 Case WFunction.Blackman : Transformer.Blackman(buffer)
                 Case WFunction.Bartlett : Transformer.Bartlett(buffer)
+                Case WFunction.Gaussian : Transformer.Gaussian(buffer)
+                Case WFunction.Kaiser : Transformer.Kaiser(buffer)
             End Select
             Return buffer
         End Function
 
         ''' <summary>
-        ''' Fast Fourier Transformer
+        ''' Performs a Fast Fourier Transform on the data.
         ''' </summary>
+        ''' <param name="frame">The data to transform.</param>
+        ''' <returns>The Fourier transformed data.</returns>
         Public Shared Function Transform(frame As Complex()) As Complex()
             Dim N As Integer = frame.Length
             If N = 1 Then Return frame
@@ -150,12 +188,83 @@ Namespace Devices
             Dim oddR As Complex() = Transformer.Transform(odd)
             Dim combined(N - 1) As Complex
             For k As Integer = 0 To N \ 2 - 1
-                Dim factor As Complex = New Complex(Math.Cos(-2 * Math.PI * k / N), Math.Sin(-2 * Math.PI * k / N))
+                Dim factor As New Complex(Math.Cos(-2 * Math.PI * k / N), Math.Sin(-2 * Math.PI * k / N))
                 combined(k) = evenR(k) + factor * oddR(k)
                 combined(k + N \ 2) = evenR(k) - factor * oddR(k)
             Next
             Return combined
         End Function
+
+        ' L:  1,2
+        Public Shared Sub BSpline(buffer As Complex(), L As Integer)
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = buffer(i).Real * (1 - Math.Abs((i - buffer.Count / 2.0) / (L / 2.0)))
+            Next
+        End Sub
+
+        ' L: 1
+        Public Shared Sub Parzen(buffer As Complex(), L As Integer)
+            For i As Integer = 0 To buffer.Count - 1
+                Dim n As Double = i - buffer.Count / 2.0
+                If Math.Abs(n) <= L / 4.0 Then
+                    buffer(i).Real = buffer(i).Real * (1 - 6 * (n / (L / 2.0)) ^ 2 * (1 - Math.Abs(n) / (L / 2.0)))
+                Else
+                    buffer(i).Real = buffer(i).Real * (2 * (1 - Math.Abs(n) / (L / 2.0)) ^ 3)
+                End If
+            Next
+        End Sub
+
+        Public Shared Sub Polynomial(buffer As Complex())
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = buffer(i).Real * (1 - ((i - buffer.Count / 2.0) / (buffer.Count / 2.0)) ^ 2)
+            Next
+        End Sub
+
+        Public Shared Sub BlackmanNuttall(buffer As Complex())
+            Static a0 As Double = 0.3635819
+            Static a1 As Double = 0.4891775
+            Static a2 As Double = 0.1365995
+            Static a3 As Double = 0.0106411
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = buffer(i).Real * (a0 - a1 * Math.Cos(2 * Math.PI * i / buffer.Count) + a2 * Math.Cos(4 * Math.PI * i / buffer.Count) - a3 * Math.Cos(6 * Math.PI * i / buffer.Count))
+            Next
+        End Sub
+
+        Public Shared Sub FlatTop(buffer As Complex())
+            Static a0 As Double = 0.21557895
+            Static a1 As Double = 0.41663158
+            Static a2 As Double = 0.277263158
+            Static a3 As Double = 0.083578947
+            Static a4 As Double = 0.006947368
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = buffer(i).Real * (a0 - a1 * Math.Cos(2 * Math.PI * i / buffer.Count) + a2 * Math.Cos(4 * Math.PI * i / buffer.Count) - a3 * Math.Cos(6 * Math.PI * i / buffer.Count) + a4 * Math.Cos(8 * Math.PI * i / buffer.Count))
+            Next
+        End Sub
+
+        Public Shared Sub Tukey(buffer As Complex(), alpha As Double)
+            For i As Integer = 0 To buffer.Count - 1
+                If i < alpha * buffer.Count / 2 Then
+                    buffer(i).Real = buffer(i).Real * 0.5 * (1 - Math.Cos(2 * Math.PI * i / (alpha * buffer.Count)))
+                ElseIf i <= buffer.Count / 2 Then
+                    buffer(i).Real = buffer(i).Real * 1
+                Else
+                    buffer(buffer.Count - i).Real = buffer(i).Real
+                End If
+            Next
+        End Sub
+
+        Public Shared Sub PlanckTaper(buffer As Complex(), epsilon As Double)
+            For i As Integer = 0 To buffer.Count - 1
+                If i < epsilon * buffer.Count Then
+                    buffer(i).Real = buffer(i).Real * (1 + Math.Exp(epsilon * buffer.Count / i - epsilon * buffer.Count / (epsilon * buffer.Count - i))) ^ -1
+                ElseIf i <= buffer.Count / 2 Then
+                    buffer(i).Real = buffer(i).Real * 1
+                Else
+                    buffer(buffer.Count - i).Real = buffer(i).Real
+                End If
+            Next
+        End Sub
+
 
         ''' <summary>
         ''' Postprocessor: Bartlett (Triangular) Window
@@ -184,8 +293,50 @@ Namespace Devices
         End Sub
 
         ''' <summary>
-        ''' Draws a grid on bitmap object defined by; dx and dy divisions and the style
+        ''' Postprocessor: Gaussian Window, Utilities.Sigma is a parameter you can adjust, default is: 0.4
         ''' </summary>
+        Public Shared Sub Gaussian(buffer As Complex())
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = CSng(buffer(i).Real * Math.Exp(-0.5 * Math.Pow((i - (buffer.Count - 1) / 2.0) / (Transformer.Sigma * (buffer.Count - 1) / 2.0), 2)))
+            Next
+        End Sub
+
+        ''' <summary>
+        ''' Postprocessor: Kaiser Window, Utilities.Beta is a parameter you can adjust, default is: 0.5
+        ''' </summary>
+        Public Shared Sub Kaiser(buffer As Complex())
+            For i As Integer = 0 To buffer.Count - 1
+                buffer(i).Real = CSng(buffer(i).Real * (Transformer.I0(Transformer.Beta * Math.Sqrt(1 - Math.Pow(2.0 * i / (buffer.Count - 1) - 1, 2))) / Transformer.I0(Transformer.Beta)))
+            Next
+        End Sub
+
+        ''' <summary>
+        ''' Simplified Modified Bessel function: I0(x) = (x^(2n))/((2^n * n!)^2) for n going from 0 to infinity.
+        ''' Defined by an infinite series: I0(x) = 1 + (x^2)/4 + (x^4)/(64*2!) + (x^6)/(2304*3!) + (x^8)/(147456*4!)
+        ''' </summary>
+        Public Shared Function I0(x As Double) As Double
+            Dim sum As Double = 1.0
+            Dim term As Double = 1.0
+            Dim squaredX As Double = x * x
+            Dim denominator As Double = 1.0
+            For i As Integer = 1 To 25
+                denominator *= i * i
+                term *= squaredX / (4 * i * i)
+                sum += term
+            Next
+            Return sum
+        End Function
+
+        ''' <summary>
+        ''' Draws a grid on a bitmap object.
+        ''' </summary>
+        ''' <param name="g">The graphics object to use for drawing.</param>
+        ''' <param name="bounds">The bounds of the drawing area.</param>
+        ''' <param name="dx">The number of divisions in the x direction.</param>
+        ''' <param name="dy">The number of divisions in the y direction.</param>
+        ''' <param name="tint">The color of the grid lines.</param>
+        ''' <param name="transparency">The transparency of the grid lines.</param>
+        ''' <param name="border">The width of the grid lines.</param>
         Public Shared Sub Grid(g As Graphics, bounds As Rectangle, dx As Integer, dy As Integer, tint As Color, transparency As Integer, border As Integer)
             Using gpen As New Pen(Color.FromArgb(transparency, tint), border) With {.DashStyle = DashStyle.Dash}
                 For i As Integer = 1 To dx
@@ -200,15 +351,20 @@ Namespace Devices
         End Sub
 
         ''' <summary>
-        ''' Draws a nice label box with title in corner
+        ''' Draws a title on a bitmap object.
         ''' </summary>
+        ''' <param name="g">The graphics object to use for drawing.</param>
+        ''' <param name="font">The font to use for the title.</param>
+        ''' <param name="title">The title to draw.</param>
         Public Shared Sub DrawTitle(g As Graphics, font As Font, title As String)
             g.DrawString(title, font, Brushes.Black, 1, 0)
         End Sub
 
         ''' <summary>
-        ''' Returns a human-readable format of a size unit
+        ''' Converts a byte count to a human-readable format.
         ''' </summary>
+        ''' <param name="byteCount">The byte count to convert.</param>
+        ''' <returns>The human-readable format of the byte count.</returns>
         Public Shared Function ToReadableFormat(byteCount As Integer) As String
             Static table() As String = {"bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
             If byteCount = 0 Then Return "0 bytes"
@@ -218,9 +374,33 @@ Namespace Devices
             Return String.Format("{0} {1}", num, table(index))
         End Function
 
+        ''' <summary>
+        ''' Very basic normalizer
+        ''' </summary>
+        Public Shared Function Normalize(ByRef max As Double, value As Double) As Single
+            If (value > max) Then max = value
+            Return CSng(value / max)
+        End Function
 
         ''' <summary>
-        ''' Returns the division according to the buffer size
+        ''' Returns a random value between a min/max range
+        ''' </summary>
+        Public Shared Function Range(min As Single, max As Single, Optional seed As Integer = 0) As Single
+            Return CSng((max - min) * Transformer.Randomizer(seed).NextDouble + min)
+        End Function
+
+        ''' <summary>
+        ''' Returns the randomizer instance
+        ''' </summary>
+        Public Shared ReadOnly Property Randomizer(Optional seed As Integer = 0) As Random
+            Get
+                Static r As New Random(DateTime.Now.Millisecond + seed)
+                Return r
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the adjusted division according to the buffer size.
         ''' </summary>
         Public Shared ReadOnly Property Divisions(buffer As Complex()) As Integer
             Get
@@ -229,7 +409,7 @@ Namespace Devices
         End Property
 
         ''' <summary>
-        ''' Returns the division according to the buffer size
+        ''' Gets the adjusted division according to the buffer size.
         ''' </summary>
         Public Shared ReadOnly Property Divisions(length As Integer) As Integer
             Get
@@ -246,7 +426,7 @@ Namespace Devices
         End Property
 
         Public Overrides Function ToString() As String
-            Return "Transformer"
+            Return String.Format("Transformer({0})", Me.Output.Name)
         End Function
     End Class
 End Namespace

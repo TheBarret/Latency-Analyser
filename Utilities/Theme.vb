@@ -11,17 +11,6 @@
         Me.ButtonHighlight = Color.FromArgb(120, Color.White)   ' White highlight with 120/255 transparency
         Me.ButtonShadow = Color.FromArgb(100, Color.Black)      ' Black shadow with 100/255 transparency
         ' Heatmap
-        Me.Heatmap = New Color() {
-                        Color.Purple,
-                        Color.DarkRed,
-                        Color.Red,
-                        Color.OrangeRed,
-                        Color.Orange,
-                        Color.Yellow,
-                        Color.YellowGreen,
-                        Color.Green,
-                        Color.DarkGreen,
-                        Color.Black
-                    }
+        Me.Heatmap = New Color() {Color.Red, Color.OrangeRed, Color.GreenYellow, Color.DarkGreen, Color.Black}
     End Sub
 End Class

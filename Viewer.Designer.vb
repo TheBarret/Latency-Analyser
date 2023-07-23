@@ -35,16 +35,18 @@ Partial Class Viewer
         'Vp
         '
         Me.Vp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.Vp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Vp.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Vp.Location = New System.Drawing.Point(0, 0)
         Me.Vp.Name = "Vp"
-        Me.Vp.Size = New System.Drawing.Size(834, 464)
+        Me.Vp.Size = New System.Drawing.Size(742, 396)
         Me.Vp.TabIndex = 0
         '
         'Viewer
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(835, 464)
+        Me.ClientSize = New System.Drawing.Size(742, 396)
         Me.Controls.Add(Me.Vp)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
