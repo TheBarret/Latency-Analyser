@@ -1,8 +1,7 @@
 # Latency Analyser
 Tracks and plots latency data and processes it through a frequency model instead of a time model (Work in progress)
 
-![image](https://github.com/TheBarret/PingTracker/assets/25234371/0ac565bb-0e3c-4c2c-9913-ce44395c42d1)
-
+![image](https://github.com/TheBarret/Latency-Analyser/assets/25234371/f5b4b5ed-3e4c-474c-80e0-5ee6e57e27c8)
 
 __screenshots are from a newer versions im currently testing and are usually different in look but will be uploaded soon__
 
