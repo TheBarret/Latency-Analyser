@@ -56,6 +56,8 @@ it's useful when you need to suppress side lobes even further
 
 - Bartlett 
 
+
+...more filters will be added...
 The Bartlett window function basically forms a triangular shape which is non-zero from the left endpoint to the right endpoint of the window.
 It's simple to compute and implement. The Bartlett window offers a reasonable compromise between the amount of spectral leakage and the resolution of the frequency estimation.
 It has reduced "scalloping loss
