@@ -2,6 +2,7 @@
 Tracks and plots latency data and processes it through a frequency model instead of a time model (Work in progress)
 
 ![image](https://github.com/TheBarret/Latency-Analyser/assets/25234371/f5b4b5ed-3e4c-474c-80e0-5ee6e57e27c8)
+![image](https://github.com/TheBarret/Latency-Analyser/assets/25234371/4ee69d1f-8c5e-4133-8974-255d7bce153f)
 
 # Advantages
 
